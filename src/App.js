@@ -2,7 +2,6 @@ import Login from './Pages/Login';
 import { useState, useEffect } from 'react';
 import './App.css';
 import Home from './Pages/Home';
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,26 +9,35 @@ import {
   Navigate,
 } from "react-router-dom";
 
-function App() {
-  const [authenticated, setAuthenticated] = useState(false);
+// import { useNavigate } from 'react-router-dom';
 
+
+
+function App() {
+  // const navigate = useNavigate();
+  const [authenticated, setIsAuthenticated] = useState(false);
   console.log("Auth State ",authenticated)
 
-  useEffect(() => {
-    // Perform initial authentication check when the component mounts
-    // handleLogin();
-  }, []);
 
+  const handleLogout = () => {
+    localStorage.clear()
+        // navigate("/")
+        setIsAuthenticated(false);
+        // Logout logic
+        // handleCloseMenu();
+      };
   // Function to handle login
   const handleLogin = () => {
     console.log("After Login State", authenticated)
-    const Secret_key = `JWTRefreshTokenHIGHsecuredPasswordVVVp1OH7Xzyr`
+    // const Secret_key = `JWTRefreshTokenHIGHsecuredPasswordVVVp1OH7Xzyr`
     const token =localStorage.getItem('Access_Token')
+    console.log(token,"token ")
     if (token) {
-      setAuthenticated(true);
+      setIsAuthenticated(true);
       return true
     } else {
-      setAuthenticated(false);
+      // debugger
+      setIsAuthenticated(false);
       return false
     }
   };
@@ -38,10 +46,10 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={handleLogin ? <Navigate to="/home" /> : <Login  />}
+          element={authenticated ? <Navigate to="/home" /> : <Login handleLogin={handleLogin}  />}
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/home" element={handleLogin ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+        <Route path="/home" element={ <Home handleLogin={handleLogin}/>} />
       </Routes>
     </Router>
   );

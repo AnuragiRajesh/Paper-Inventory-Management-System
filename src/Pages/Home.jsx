@@ -1,5 +1,5 @@
 import DataTable from '../Components/Table';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -21,111 +21,49 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { stockInApi } from '../Services/DataServices';
 const drawerWidth = 230;
 
-const Home = () => {
-  console.log("Home");
-  const [open, setOpen] = React.useState(false);
+const Home = ({handleLogin}) => {
+
+  const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [unitId, setUnitId] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+  const  { uprodunit, user,role,} = location.state|| {};
+  const [dataSource, setDataSource] = useState();
+  const [filteredDataSource, setFilteredDataSourcee] = useState(dataSource)
+  const [selectedItem, setSelectedItem] = useState("Stock In");
+
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
   const handleLogout = () => {
-localStorage.clear()
+    localStorage.clear()
+    handleLogin()
     navigate("/")
     // Logout logic
     handleCloseMenu();
   };
-  const [dataSource, setDataSource] = useState([
-    {
-      Inward_id: "id23",
- 
- unit:"Peru",     supplier: 'Oracel',
-      paperType: 'Smooth',
-      paperSize: '3.5',
-      stockStatus: 890,
-      weight: 46,
-      paperStockType: 'Sheets',
-      noOfReam: 345,
-      noOfReels: 44,
-      gsm:"1.2mm"
-    },
-    {
-      Inward_id: "iddd23",
-      unit:"Chennai",
-      supplier: 'Microsoft',
-      paperType: 'Hard',
-      paperSize: '3.55',
-      stockStatus: 85490,
-      weight: 4346,
-      paperStockType: 'Sheets',
-      noOfReam: 34345,
-      noOfReels: 4544,
-      gsm:"1.2mm"
-    },
-    {
-      Inward_id: "9dd23",
-
-unit:"Delhi",      supplier: 'Amazon',
-      paperType: 'Medium',
-      paperSize: '3.0',
-      stockStatus: 890,
-      weight: 4346,
-      paperStockType: 'Reels',
-      noOfReam: 3400345,
-      noOfReels: 458844,
-      gsm:"1.2mm"
-    },
-    {
-      Inward_id: "90d23",
-
-unit:"Mumbai",      supplier: 'Amazon',
-      paperType: 'Medium',
-      paperSize: '3.0j',
-      stockStatus: 8970,
-      weight: 43466,
-      paperStockType: 'Reels',
-      noOfReam: 345,
-      noOfReels: 84,
-      gsm:"1.2mm"
-    },
-    {
-      Inward_id: "90d283",
-      unit:"Benglore",
-      supplier: 'Flipcart',
-      paperType: 'Hard',
-      paperSize: '3.y0j',
-      stockStatus: 870,
-      weight: 434996,
-      paperStockType: 'Reels',
-      noOfReam: 345,
-      noOfReels: 864,
-      gsm:"1.2mm"
-    },
-  ]);
-  const [filteredDataSource, setFilteredDataSourcee] = useState(dataSource)
-  const [selectedItem, setSelectedItem] = useState("Stock In");
   
 const UnitSelect =(unit)=>{
-  if(unit==="All"){
-    return setFilteredDataSourcee(dataSource)
-  }
-  const newData = dataSource.filter((item) => item.unit === unit)
-  setFilteredDataSourcee(newData)
-console.log( newData
-,"jiiij")
+  setUnitId(unit)
 }
 const addAndUpdate =(formData)=>{
-  // filteredDataSource.push(formData)
-  dataSource.unshift(formData)
-  console.log(formData,"99999")
+  console.log(formData,"9999uiuiuiu9")
+  stockInApi(formData).then((response) => {
+    console.log(response)
+  }) 
+  .catch((error) => {
+    console.log(error.message)
+  });
 //  dataSource.push(formData)
 }
   const deleteRow = (rowToPerform) => {
@@ -151,7 +89,7 @@ const addAndUpdate =(formData)=>{
 >
   <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
     <Typography variant="h6" noWrap component="div">
-      Paper Inventory Management System
+   Inventory Management System
     </Typography>
     <Button
           color="inherit"
@@ -222,26 +160,27 @@ const addAndUpdate =(formData)=>{
           <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3, zIndex: 0 }}>
             <Toolbar />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "2rem" }}>
-              <Button variant="outlined" onClick={handleOpen}>New Inventry</Button>
-              <SelectLabels UnitSelect={UnitSelect} />
+              <Button variant="outlined"  disabled={unitId>0?false:true} onClick={handleOpen}>New Inventory</Button>
+              <SelectLabels uprodunit={uprodunit} UnitSelect={UnitSelect} />
             </div>
             <div style={{ marginTop: "4rem" }}>
-              <DataTable dataSource={filteredDataSource} deleteRow={deleteRow} />
+              <DataTable unitId={unitId} deleteRow={deleteRow} />
             </div>
             {open && (
               <SpringModal
                 rowToPerform={{
-                  Inward_id: Math.random(100),
-                  unit:String,
-                  supplier: String,
-                  paperType: String,
-                  paperSize: String,
-                  stockStatus: Number,
-                  weight: Number,
-                  paperStockType: String,
-                  noOfReam: Number,
-                  noOfReels: Number,
-                  gsm:String
+                  "tsupplierMasterId": null,
+                  "paper_Group_Id": null,
+                  "paper_Mill_Id": null,
+                  "brand": null,
+                  "paper_size": null,
+                  "paper_Form": null,
+                  "paper_gsm": null,
+                  "noOfReels": null,
+                  "noOfReam": null,
+                  "weight": null,
+                  "user_id":`${user[0].id}`,
+                  "unit_id": `${unitId}`
                 }} title={"Make a new Entry"}
                 setOpen={setOpen}
                 open={open}

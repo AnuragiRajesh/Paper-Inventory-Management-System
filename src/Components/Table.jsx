@@ -1,4 +1,5 @@
 import * as React from 'react';
+import '../App.css'
 import { useState,useEffect } from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,21 +10,56 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import SpringModal from './Model';
-const DataTable = ({dataSource,deleteRow})=>{
-  console.log(dataSource,"last")
+import { particularUnitApi,accessAllUnitApi } from '../Services/DataServices';
+import { useNavigate } from 'react-router-dom';
+
+
+const DataTable = ({deleteRow,unitId})=>{
+const navigate = useNavigate();
 const [open, setOpen] = React.useState(false);
 const [openComfirm, setOpenComfirm] = React.useState(false);
 const [page, setPage] = useState(0);
-const [rowsPerPage, setRowsPerPage] = useState(5);
-const [data, setData] = useState(dataSource);
+const [rowsPerPage, setRowsPerPage] = useState(3);
+const [data, setData] = useState([
+  // {
+  //   Inward_id: 1,
+  //   Inward_date: "2023-06-22T00:00:00",
+  //   SupplierName: "ACME PRINT O PAC PVT. LTD.",
+  //   Paper_type_id: 2,
+  //   Brand: "ART PAPER GLOSS (FSC)",
+  //   Paper_size: "25.4",
+  //   Paper_stock_type: "Reels",
+  //   Paper_gsm: "54",
+  //   NoOfReels: 3,
+  //   NoOfReam: 4,
+  //   Weight: 77,
+  //   User_id: "0074ebd4-679e-45d5-968a-8e3fc42c0efb",
+  //   Unit_id: "11",
+  //   Modified_on: "2023-06-22T00:00:00",
+  //   Stock_Status: 10
+  // }
+]);
 const [rowToPerform, setRowToPerform] = useState();
 useEffect(() => {
-  setData(dataSource);
-}, [dataSource]);
+  unitId>0?particularUnitApi(unitId).then((response) => {
+    setData(response.data)
+    console.log(response.data,"allunit");
+  }) 
+  .catch((error) => {
+    console.log(error.message)
+  }):accessAllUnitApi().then((response) => {
+    setData(response.data)
+    console.log(response.data,"allunit");
+  }) 
+  .catch((error) => {
+    debugger
+    // navigate('login')
+    console.log(error.message)
+  })
+}, [unitId]);
  const handleChangePage = (event, newPage) => {
   setPage(newPage);
 };
-
 const handleChangeRowsPerPage = (event) => {
   setRowsPerPage(parseInt(event.target.value, 10));
   setPage(0);
@@ -43,15 +79,12 @@ const handleDeleteClick = (row) => {
 };
 
 const Cancel = () => {
-
-
-
   openComfirm(false);
 };
 const Yes = () => {
   deleteRow(rowToPerform)
   setOpenComfirm(false);
-  setData(dataSource)
+  // setData(dataSource)
 };
 
 
@@ -64,19 +97,18 @@ return (
   <TableContainer  >
   <Table>
     <TableHead>
-      <TableRow>
-        <TableCell>Inward Id</TableCell>
-        <TableCell>Supplier</TableCell>
-        <TableCell>Paper Size</TableCell>
-        <TableCell>Stock Status</TableCell>
-        <TableCell>Weight</TableCell>
-        <TableCell>GSM</TableCell>
-        <TableCell>Paper Stock Type</TableCell>
-        <TableCell>No Of Ream</TableCell>
-        <TableCell>No Of Reels</TableCell>
-        {/* <TableCell>Modified On</TableCell> */}
-        <TableCell>Action</TableCell>
-        {/* Add more table headers here */}
+      <TableRow className='headCell'>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }} >Inward Id</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Supplier</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Paper Size</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Total Weight</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>GSM</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Paper Form</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>No Of Ream</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>No Of Reels</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Paper Mill</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Brand</TableCell>
+        <TableCell  style={{ backgroundColor: '#F4F4F4' }}>Action</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -84,16 +116,15 @@ return (
       {paginatedData.map((row) => (
         <TableRow key={row.Inward_id}>
           <TableCell>{row.Inward_id}</TableCell>
-          <TableCell>{row.supplier}</TableCell>
-          <TableCell>{row.paperSize}</TableCell>
-          <TableCell>{row.stockStatus}</TableCell>
-          <TableCell>{row.weight}</TableCell>
-          <TableCell>{row.gsm}</TableCell>
-          <TableCell>{row.paperStockType}</TableCell>
-          <TableCell>{row.noOfReam}</TableCell>
-          <TableCell>{row.noOfReels}</TableCell>
-          {/* <TableCell>{row.Modified_on}</TableCell> */}
-          {/* <TableCell>{row.Weight}</TableCell> */}
+          <TableCell>{row.SupplierName}</TableCell>
+          <TableCell>{row.Paper_size}</TableCell>
+          <TableCell>{row.Weight}</TableCell>
+          <TableCell>{row.Paper_gsm}</TableCell>
+          <TableCell>{row.Paper_stock_type}</TableCell>
+          <TableCell>{row.NoOfReam}</TableCell>
+          <TableCell>{row.NoOfReels}</TableCell>
+          <TableCell>{row.Unit_id}</TableCell>
+          <TableCell>{row.Brand}</TableCell>
 
           <TableCell><button onClick={()=>{handleEditClick(row) }}><CreateRoundedIcon/></button><button onClick={()=>{
             handleDeleteClick(row)
@@ -104,7 +135,7 @@ return (
     </TableBody>
   </Table>
   <TablePagination
-    rowsPerPageOptions={[5, 10, 25]}
+    rowsPerPageOptions={[3, 5, 10]}
     component="div"
     count={data.length}
     rowsPerPage={rowsPerPage}

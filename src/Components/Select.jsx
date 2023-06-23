@@ -4,8 +4,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SelectLabels({UnitSelect}) {
-  const [unit, setUnit] = React.useState("All");
+export default function SelectLabels({ UnitSelect, uprodunit }) {
+  console.log(uprodunit, "lable")
+  const [unit, setUnit] = React.useState("");
 
   const handleChange = (SelectChangeEvent) => {
     setUnit(SelectChangeEvent.target.value);
@@ -14,25 +15,24 @@ export default function SelectLabels({UnitSelect}) {
 
   return (
     <div>
-    
-    <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id="demo-simple-select-helper-label">Unit</InputLabel>
+
+      <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-helper-label">Units</InputLabel>
         <Select
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
           value={unit}
-          label="Age"
+          label="Units"
           onChange={handleChange}
         >
-          {/* <MenuItem value="">
-            <em>None</em>
-          </MenuItem> */}
-               <MenuItem value={'All'}>All</MenuItem>
-          <MenuItem value={'Benglore'}>Benglore</MenuItem>
-          <MenuItem value={'Mumbai'}>Mumbai</MenuItem>
-          <MenuItem value={'Delhi'}>Delhi</MenuItem>
-          <MenuItem value={'Chennai'}>Chennai</MenuItem>
-          <MenuItem value={'Peru'}>Peru</MenuItem>
+          <MenuItem value={0}>
+            <em>All</em>
+          </MenuItem>
+          {uprodunit.map((unit) => (
+            <MenuItem key={unit.unitId} value={unit.unitId}>
+              {unit.unitName}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
     </div>
