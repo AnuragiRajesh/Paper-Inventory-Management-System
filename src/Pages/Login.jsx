@@ -41,33 +41,10 @@ const Login = ({handleLogin}) => {
     }
     // Proceed with login if form is valid
     if (isValid) {
-        console.log(username,password)
-      // Add your login logic here
-      //   console.log(jsonData);
-    loginApi({
+      handleLogin({
         Username:username,
         Password:password
-      }).then((response) => {
-        setInvalidLoginCredentials("login successfully")
-        console.log(response.data,"login");
-        localStorage.setItem("Access_Token", response.data.token)
-        localStorage.setItem("Refresh Token", response.data.refreshToken);
-        const { uprodunit, user,role,} = response.data
-        // console.log( , userName,,"login file")
-  //       setUprodunit(response.data.uprodunit)
-  //       setRole(response.data.role)
-        navigate('/home',{state: { uprodunit, user,role,}});
-        handleLogin()
-        
-      }) 
-      .catch((error) => {
-        console.log(error.message)
-        setInvalidLoginCredentials(error.message)
-        setTimeout(() => {
-        setInvalidLoginCredentials('')
-        }, 3000);
-        // console.log(error.response.data.error_description,"koko");
-      });
+      })
     }
   };
 

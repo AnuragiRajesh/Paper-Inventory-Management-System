@@ -1,56 +1,111 @@
 
-
 import axios from 'axios';
+
+const baseUrl = `http://172.17.130.162:9123`
+const refreshTokenUrl =`${baseUrl}/refresh-token`
+const accessAllUnitApiUrl = `${baseUrl}/stock/inward`
+const stockInApiUrl = `${baseUrl}/stock/inward`
+const updateStockInApiUrl = `${baseUrl}/stock/inward`
+const deleteStockApiUrl = `${baseUrl}/stock/inward`
+const loginApiUrl = `${baseUrl}/auth/login`
+const supplierApiUrl = `${baseUrl}/Master/Supplier`
+const paperGroupApiUrl = `${baseUrl}/Master/PaperGroup`
+const brandApiUrl = `${baseUrl}/Master/PaperBrand`
+const millApiUrl = `${baseUrl}/Master/Mill`
+const gsmApiUrl = `${baseUrl}/Master/GSM`
+const paperReelSizeApiUrl = `${baseUrl}/Master/PaperReelSize`;
+const paperSheetSizeApiUrl = `${baseUrl}/Master/PaperSheetSize`
 const Access_Token = localStorage.getItem('Access_Token')
-const headers = {
-   headers:{
-    "Authorization" : `Bearer ${Access_Token}`
-}
-};
-const particularUnitApiUrl =`http://172.17.130.162:9123/api/Authenticate/auth/ViewUnits`
-const accessAllUnitApiUrl = `http://172.17.130.162:9123/api/Authenticate/auth/ViewallUnits`
-const stockInApiUrl = `http://172.17.130.162:9123/api/Authenticate/inventory/stock-in`
-const loginApiUrl = `http://172.17.130.162:9123/api/Authenticate/auth/login`
-const supplierApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/Supplier`
-const paperGroupApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/PaperGroup`
-const brandApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/PaperBrand`
-const millApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/Mill`
-const gsmApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/GSM`
-const paperReelSizeApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/PaperReelSize`;
-const paperSheetSizeApiUrl = `http://172.17.130.162:9123/api/Authenticate/Masters/PaperSheetSize`
+const Refresh_Token = localStorage.getItem('Refresh_Token')
+
+const axiosInstance = axios.create({
+  baseURL: baseUrl,
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${Access_Token}`,
+  },
+});
+
+// Axios interceptor to handle token expiration
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        // const refreshToken = localStorage.getItem('Refresh_Token');
+        if (Refresh_Token) {
+          const refreshResponse = await axios.post(refreshTokenUrl, {
+            accessToken: Access_Token,
+            refreshToken:Refresh_Token,
+          });
+          console.log(refreshResponse)
+          const newAccessToken = refreshResponse.data.accessToken;
+          const newRefreshToken = refreshResponse.data.refreshToken;
+          localStorage.setItem("Access_Token", newAccessToken)
+          localStorage.setItem("Refresh_Token", newRefreshToken);
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return axiosInstance(originalRequest);
+        } else {
+       
+        }
+      } catch (error) {
+       
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const loginApi = (data) => {
-    return axios.post(loginApiUrl, data,);
+  return axios.post(loginApiUrl, data);
 };
-export const supplierApi = async () => {
-    return axios.get(supplierApiUrl, headers);
+
+export const supplierApi = () => {
+  return axiosInstance.get(supplierApiUrl);
 };
-export const paperGroupApi = async () => {
-    return axios.get(paperGroupApiUrl, headers);
+
+export const paperGroupApi = () => {
+  return axiosInstance.get(paperGroupApiUrl);
 };
-export const brandApi = async () => {
-    return axios.get(brandApiUrl, headers);
+
+export const brandApi = () => {
+  return axiosInstance.get(brandApiUrl);
 };
-export const millApi = async () => {
-    return axios.get(millApiUrl, headers);
+
+export const millApi = () => {
+  return axiosInstance.get(millApiUrl);
 };
-export const gsmApi = async () => {
-    return axios.get(gsmApiUrl, headers);
+
+export const gsmApi = () => {
+  return axiosInstance.get(gsmApiUrl);
 };
-export const paperReelSizeApi = async () => {
-    return axios.get(paperReelSizeApiUrl, headers);
+
+export const paperReelSizeApi = () => {
+  return axiosInstance.get(paperReelSizeApiUrl);
 };
-export const paperSheetSizeApi = async () => {
-    return axios.get(paperSheetSizeApiUrl, headers);
+
+export const paperSheetSizeApi = () => {
+  return axiosInstance.get(paperSheetSizeApiUrl);
 };
+
 export const stockInApi = async (data) => {
-    console.log(data,"data ")
-    return axios.post(stockInApiUrl, data, headers);
+    return axiosInstance.post(stockInApiUrl,data);
+
 };
+export const updateStockInApiUrlApi = async (Inward_Id,data) => {
+  console.log(data)
+  return axiosInstance.put(`${updateStockInApiUrl}/${Inward_Id}`,data);
+}
 export const accessAllUnitApi = async () => {
-    console.log(headers,"headers")
-    return axios.get(accessAllUnitApiUrl,headers );
+    return axiosInstance.get(accessAllUnitApiUrl);
 };
 export const particularUnitApi = async (data) => {
-    console.log(data,"particularunit")
-    return axios.get(`${particularUnitApiUrl}?unitid=${data}` ,headers );
+    console.log(data)
+    return axiosInstance.get(`${accessAllUnitApiUrl}/${data}`);
+}
+
+export const deleteStockApi = async (Inward_Id) => {
+  return axiosInstance.delete(`${deleteStockApiUrl}/${Inward_Id}`);
 }

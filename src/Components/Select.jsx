@@ -6,7 +6,7 @@ import Select from '@mui/material/Select';
 
 export default function SelectLabels({ UnitSelect, uprodunit }) {
   console.log(uprodunit, "lable")
-  const [unit, setUnit] = React.useState("");
+  const [unit, setUnit] = React.useState("All");
 
   const handleChange = (SelectChangeEvent) => {
     setUnit(SelectChangeEvent.target.value);
@@ -25,7 +25,7 @@ export default function SelectLabels({ UnitSelect, uprodunit }) {
           label="Units"
           onChange={handleChange}
         >
-          <MenuItem value={0}>
+          <MenuItem value={"All"}>
             <em>All</em>
           </MenuItem>
           {uprodunit.map((unit) => (

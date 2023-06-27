@@ -46,9 +46,6 @@ const style = {
 
 
 
-
-
-
 export default function SpringModal({ setOpen, open, rowToPerform, title, addAndUpdate }) {
   const [isFormValid, setIsFormValid] = useState(false);
   const [suppliers, setSupplier] = useState([])
@@ -59,27 +56,6 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
   const [paperSizeOfReel, setPaperSizeOfReel] = useState([])
   const [paperSizeOfSheet, setPaperSizeOfSheet] = useState([])
   const [formData, setFormData] = useState(rowToPerform);
-  const [inputValue, setInputValue] = React.useState('');
-  const [value, setValue] = React.useState(suppliers[0]);
-  const [selectedOption, setSelectedOption] = useState(null);
-  useEffect(() => {
-    console.log(rowToPerform, "oooo")
-    const isFormValid =
-      formData.tsupplierMasterId !== '' &&
-      formData.paper_Group_Id !== '' &&
-      formData.paper_Mill_Id !== '' &&
-      formData.brand !== '' &&
-      formData.paper_size !== '' &&
-      formData.paper_Form !== '' &&
-      formData.paper_gsm !== '' &&
-      formData.noOfReels !== '' &&
-      formData.noOfReam !== '' &&
-      formData.weight !== '' &&
-      formData.user_id !== '' &&
-      formData.unit_id !== ''
-    setIsFormValid(isFormValid);
-    console.log(isFormValid)
-  }, [formData]);
 
 
   useEffect(() => {
@@ -97,7 +73,6 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
     })
     gsmApi().then((response) => {
       setGsms(response.data)
-      console.log(response.data, "GSM")
     })
   }, [])
 
@@ -106,43 +81,19 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
 
   const handleCancel = () => setOpen(false);
   const handleAdd = () => {
-    console.log(formData, "pppp")
     addAndUpdate(formData)
 
     handleCancel()
   };
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    console.log(event.target.name, event.target.value)
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    // console.log(value)
-    // if (value === 'Reels') {
-    //   paperReelSizeApi().then((response) => {
-    //     setPaperSizeOfReel(response.data)
-    //     setPaperSizeOfSheet([])
-    //     console.log(response.data, "reels")
-    //   })
-    // } else if (value === 'Sheets') {
-    //   paperSheetSizeApi().then((response) => {
-    //     setPaperSizeOfSheet(response.data)
-    //     setPaperSizeOfReel([])
-    //     console.log(response.data, "sheet")
-    //   })
-    // }
+  
   };
-  const handleOptionChange = (event, newValue) => {
-    // const { name, value } = newValue
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   [name]: value,
-    // }))
-    console.log(newValue, "new value")
-    setSelectedOption(newValue);
-    // console.log(selectedOption,"hhh")
-  };
+
   return (
     <div>
       <Modal
@@ -166,7 +117,6 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                     getOptionLabel={(option) => option.SupplierName}
                     value={formData.tsupplierMasterId === null ? null : suppliers.find((option) => option.tsupplierMasterId === formData.tsupplierMasterId)}
                     onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
                       setFormData((prevData) => ({
                         ...prevData,
                         tsupplierMasterId: newValue ? newValue.tsupplierMasterId : null,
@@ -181,12 +131,11 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                   <Autocomplete
                     options={paperGroup}
                     getOptionLabel={(option) => option.Paper_Group}
-                    value={formData.paper_Group_Id === null ? null : paperGroup.find((option) => option.Paper_Group_Id === formData.paper_Group_Id)}
+                    value={formData.Paper_Group_Id === null ? null : paperGroup.find((option) => option.Paper_Group_Id === formData.Paper_Group_Id)}
                     onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
                       setFormData((prevData) => ({
                         ...prevData,
-                        paper_Group_Id: newValue ? newValue.Paper_Group_Id : null,
+                        Paper_Group_Id: newValue ? newValue.Paper_Group_Id : null,
                       }));
                     }}
                     renderInput={(params) => (
@@ -198,24 +147,21 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                 <Autocomplete
                     options={["Reels","Sheets"]}
                     getOptionLabel={(option) => option}
-                    value={formData.paper_Form === null ? null : ["Reels","Sheets"].find((option) => option === formData.paper_Form)}
+                    value={formData.Paper_Form === null ? null : ["Reels","Sheets"].find((option) => option === formData.Paper_Form)}
                     onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
                       setFormData((prevData) => ({
                         ...prevData,
-                        paper_Form: newValue ? newValue : null,
+                        Paper_Form: newValue ? newValue : null,
                       }));
                       if (newValue === 'Reels') {
                         paperReelSizeApi().then((response) => {
                           setPaperSizeOfReel(response.data)
                           setPaperSizeOfSheet([])
-                          console.log(response.data, "reels")
                         })
                       } else if (newValue === 'Sheets') {
                         paperSheetSizeApi().then((response) => {
                           setPaperSizeOfSheet(response.data)
                           setPaperSizeOfReel([])
-                          console.log(response.data, "sheet")
                         })
                       }
                     }
@@ -231,19 +177,18 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
   options={[...paperSizeOfReel, ...paperSizeOfSheet]}
   getOptionLabel={(option) => option.Paper_Reel_Size || option.Paper_Sheet_Size}
   value={
-    formData.paper_size === null
+    formData.Paper_size === null
       ? null
       : [...paperSizeOfReel, ...paperSizeOfSheet].find(
           (option) =>
-            option.Paper_Reel_Size === formData.paper_size ||
-            option.Paper_Sheet_Size === formData.paper_size
+            option.Paper_Reel_Size === formData.Paper_size ||
+            option.Paper_Sheet_Size === formData.Paper_size
         )
   }
   onChange={(event, newValue) => {
-    console.log(newValue, "new value");
     setFormData((prevData) => ({
       ...prevData,
-      paper_size: newValue ? newValue.Paper_Reel_Size ||  newValue.Paper_Sheet_Size
+      Paper_size: newValue ? newValue.Paper_Reel_Size ||  newValue.Paper_Sheet_Size
       : null,
     }));
   }}
@@ -259,12 +204,11 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                 <Autocomplete
                     options={brands}
                     getOptionLabel={(option) => option.Paper_Quantity}
-                    value={formData.brand === null ? null : brands.find((option) => option.Paper_Quantity === formData.brand)}
+                    value={formData.Brand === null ? null : brands.find((option) => option.Paper_Quantity === formData.Brand)}
                     onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
                       setFormData((prevData) => ({
                         ...prevData,
-                        brand: newValue ? newValue.Paper_Quantity : null,
+                        Brand: newValue ? newValue.Paper_Quantity : null,
                       }));
                     }}
                     renderInput={(params) => (
@@ -274,31 +218,31 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                 </Grid>
                 <Grid item xs={6}>
                 <Autocomplete
-                    options={mills}
-                    getOptionLabel={(option) => option.Paper_Mill}
-                    value={formData.paper_Mill_Id === null ? null : mills.find((option) => option.Paper_Mill_Id === formData.paper_Mill_Id)}
-                    onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        paper_Mill_Id: newValue ? newValue.Paper_Mill_Id : null,
-                      }));
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Paper Mill" variant="outlined" />
-                    )}
-                  />
+  options={mills}
+  getOptionLabel={(option) => option.Paper_Mill}
+  value={
+    formData.Paper_Mill_Id === null
+      ? null
+      : mills.find((option) => option.Paper_Mill_Id === formData.Paper_Mill_Id)
+  }
+  onChange={(event, newValue) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      Paper_Mill_Id: newValue ? newValue.Paper_Mill_Id : null,
+    }));
+  }}
+  renderInput={(params) => <TextField {...params} label="Paper Mill" variant="outlined" />}
+/>
                 </Grid>
                 <Grid item xs={6}>
                  <Autocomplete
                     options={gsms}
                     getOptionLabel={(option) => option.GSM}
-                    value={formData.paper_gsm === null ? null : gsms.find((option) => option.GSM === formData.paper_gsm)}
+                    value={formData.Paper_gsm === null ? null : gsms.find((option) => option.GSM === formData.Paper_gsm)}
                     onChange={(event, newValue) => {
-                      console.log(newValue, "new value");
                       setFormData((prevData) => ({
                         ...prevData,
-                        paper_gsm: newValue ? newValue.GSM : null,
+                        Paper_gsm: newValue ? newValue.GSM : null,
                       }));
                     }}
                     renderInput={(params) => (
@@ -308,14 +252,14 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                 </Grid>
 
                 <Grid item xs={6}>
-                  <TextField value={formData.weight} name='weight' onChange={handleInputChange} label="Total Weight" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
+                  <TextField value={formData.Weight} name='Weight' onChange={handleInputChange} label="Total Weight" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
                 </Grid>
 
                 <Grid item xs={6}>
-                  <TextField value={formData.noOfReam} name='noOfReam' onChange={handleInputChange} label="No Of Ream" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
+                  <TextField value={formData.NoOfReam} name='NoOfReam' onChange={handleInputChange} label="No Of Ream" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField name="noOfReels" value={formData.noOfReels} onChange={handleInputChange} label="No Of Reels" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
+                  <TextField name="NoOfReels" value={formData.NoOfReels} onChange={handleInputChange} label="No Of Reels" variant="outlined" fullWidth sx={{ mb: '1rem' }} type="number" />
                 </Grid>
               </Grid>
             </Box>

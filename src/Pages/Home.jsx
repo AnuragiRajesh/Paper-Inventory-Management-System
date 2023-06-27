@@ -1,5 +1,5 @@
 import DataTable from '../Components/Table';
-import { useState,useEffect } from 'react';
+import { useState,useEffect ,useRef,useContext} from 'react';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -23,21 +23,52 @@ import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { stockInApi } from '../Services/DataServices';
+import { particularUnitApi,accessAllUnitApi } from '../Services/DataServices';
+import { AuthContext } from '../context/AuthContext';
 const drawerWidth = 230;
 
-const Home = ({handleLogin}) => {
-
+const Home = () => {
+  const getData = useRef(null);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [unitId, setUnitId] = useState(0);
+  const [unitId, setUnitId] = useState("All");
   const navigate = useNavigate();
   const location = useLocation();
-  const  { uprodunit, user,role,} = location.state|| {};
-  const [dataSource, setDataSource] = useState();
-  const [filteredDataSource, setFilteredDataSourcee] = useState(dataSource)
+  // const  { uprodunit, user,role,} = location.state|| {};
+  const { handleLogout  } = useContext(AuthContext);
+  const [uprodunitUserRole,setUprodunitUserRole] = useState({})
+  const { uprodunit, user, role } = uprodunitUserRole;
   const [selectedItem, setSelectedItem] = useState("Stock In");
-
-
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    getTableData()
+  }, [unitId]);
+  
+  useEffect(()=>{
+if(localStorage.getItem('userData')){
+  setUprodunitUserRole(JSON.parse(localStorage.getItem('userData')))
+}else{
+  console.log("pppp")
+  handleLogout()
+  navigate('/')
+  
+}
+  },[])
+  const getTableData = ()=>{
+    unitId==="All"?accessAllUnitApi().then((response) => {
+      setData(response.data)
+      console.log(response.data,"allunit");
+    }) 
+    .catch((error) => {
+      console.log(error.message)
+    }):particularUnitApi(unitId).then((response) => {
+      setData(response.data)
+      console.log(data,"alludfgdgnit");
+    }) 
+    .catch((error) => {
+      console.log(error.message)
+    })
+  }
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -45,38 +76,33 @@ const Home = ({handleLogin}) => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogoutt = () => {
     localStorage.clear()
-    handleLogin()
+    handleLogout()
     navigate("/")
-    // Logout logic
     handleCloseMenu();
   };
   
 const UnitSelect =(unit)=>{
   setUnitId(unit)
 }
-const addAndUpdate =(formData)=>{
-  console.log(formData,"9999uiuiuiu9")
+const addDatasource =(formData)=>{
   stockInApi(formData).then((response) => {
     console.log(response)
+    getTableData()
   }) 
   .catch((error) => {
     console.log(error.message)
   });
-//  dataSource.push(formData)
 }
-  const deleteRow = (rowToPerform) => {
-   const newData =filteredDataSource.filter((item) => item.Inward_id !== rowToPerform.Inward_id)
-    setFilteredDataSourcee(newData);
-    console.log(newData, "hgsdfhjsj");
-  };
+
+
 
   const handleOpen = () => setOpen(!open);
 
   return (
     <>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex', }}>
         <CssBaseline />
         <AppBar
   position="fixed"
@@ -111,7 +137,7 @@ const addAndUpdate =(formData)=>{
             horizontal: "right"
           }}
         >
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          <MenuItem onClick={handleLogoutt}>Logout</MenuItem>
         </Menu>
   </Toolbar>
 </AppBar>
@@ -161,30 +187,31 @@ const addAndUpdate =(formData)=>{
             <Toolbar />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "2rem" }}>
               <Button variant="outlined"  disabled={unitId>0?false:true} onClick={handleOpen}>New Inventory</Button>
-              <SelectLabels uprodunit={uprodunit} UnitSelect={UnitSelect} />
+             {uprodunit&& <SelectLabels uprodunit={uprodunit} UnitSelect={UnitSelect} />}
             </div>
             <div style={{ marginTop: "4rem" }}>
-              <DataTable unitId={unitId} deleteRow={deleteRow} />
+              <DataTable getTableData={getTableData} dataSource={data}  />
             </div>
             {open && (
               <SpringModal
                 rowToPerform={{
                   "tsupplierMasterId": null,
-                  "paper_Group_Id": null,
-                  "paper_Mill_Id": null,
-                  "brand": null,
-                  "paper_size": null,
-                  "paper_Form": null,
-                  "paper_gsm": null,
-                  "noOfReels": null,
-                  "noOfReam": null,
-                  "weight": null,
-                  "user_id":`${user[0].id}`,
-                  "unit_id": `${unitId}`
+                  "Paper_Group_Id": null,
+                  "Paper_Mill_Id": null,
+                  "Brand": null,
+                  "Paper_size": null,
+                  "Paper_Form": null,
+                  "Paper_gsm": null,
+                  "NoOfReels": null,
+                  "NoOfReam": null,
+                  "Weight": null,
+                  "User_id":`${user[0].id}`,
+                  "Unit_id": `${unitId}`
                 }} title={"Make a new Entry"}
                 setOpen={setOpen}
                 open={open}
-                addAndUpdate={addAndUpdate}
+                addAndUpdate={addDatasource}
+                ref={getData}
               />
             )}
           </Box>
