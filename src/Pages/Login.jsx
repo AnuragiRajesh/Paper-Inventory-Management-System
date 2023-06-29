@@ -1,6 +1,6 @@
 import React, { useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginApi } from '../Services/DataServices';
+// import { useNavigate } from 'react-router-dom';
+// import { loginApi } from '../Services/DataServices';
 
 import '../App.css'
 const Login = ({handleLogin}) => {
@@ -14,7 +14,7 @@ const Login = ({handleLogin}) => {
   const [username, setUsername] = useState('');
 
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setUsername(e.target.value);

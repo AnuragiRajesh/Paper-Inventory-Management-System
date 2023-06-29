@@ -1,6 +1,5 @@
 
 import axios from 'axios';
-
 const baseUrl = `http://172.17.130.162:9123`
 const refreshTokenUrl =`${baseUrl}/refresh-token`
 const accessAllUnitApiUrl = `${baseUrl}/stock/inward`
@@ -17,7 +16,10 @@ const paperReelSizeApiUrl = `${baseUrl}/Master/PaperReelSize`;
 const paperSheetSizeApiUrl = `${baseUrl}/Master/PaperSheetSize`
 const Access_Token = localStorage.getItem('Access_Token')
 const Refresh_Token = localStorage.getItem('Refresh_Token')
-
+const headers = {
+  headers:{
+   "Authorization" : `Bearer ${Access_Token}`
+}};
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   headers: {
@@ -34,7 +36,6 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        // const refreshToken = localStorage.getItem('Refresh_Token');
         if (Refresh_Token) {
           const refreshResponse = await axios.post(refreshTokenUrl, {
             accessToken: Access_Token,
@@ -48,7 +49,6 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return axiosInstance(originalRequest);
         } else {
-       
         }
       } catch (error) {
        
@@ -59,7 +59,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export const loginApi = (data) => {
-  return axios.post(loginApiUrl, data);
+  return axios.post(loginApiUrl,data);
 };
 
 export const supplierApi = () => {

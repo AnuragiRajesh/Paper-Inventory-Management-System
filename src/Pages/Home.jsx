@@ -21,7 +21,6 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 import { stockInApi } from '../Services/DataServices';
 import { particularUnitApi,accessAllUnitApi } from '../Services/DataServices';
 import { AuthContext } from '../context/AuthContext';
@@ -33,11 +32,10 @@ const Home = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [unitId, setUnitId] = useState("All");
   const navigate = useNavigate();
-  const location = useLocation();
   // const  { uprodunit, user,role,} = location.state|| {};
   const { handleLogout  } = useContext(AuthContext);
   const [uprodunitUserRole,setUprodunitUserRole] = useState({})
-  const { uprodunit, user, role } = uprodunitUserRole;
+  const { uprodunit, user } = uprodunitUserRole;
   const [selectedItem, setSelectedItem] = useState("Stock In");
   const [data, setData] = useState([]);
   useEffect(() => {

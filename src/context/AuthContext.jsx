@@ -1,27 +1,6 @@
-// import { useContext,useEffect,useState } from "react";
-// import { loginApi } from "../Services/DataServices";
-// const AuthContext = React.createContext()
-
-
-// export const useAuth =()=>{
-//     return useContext(AuthContext)
-// }
-// export function AuthProvider ({children }){
-//     con [ currentUser,setCurrentUser]= useState()
-//     const [loading, setLoading]=useState()
-
-
-//     function login (email, password){
-//       return  loginApi({email,password})
-//     }
-// } 
-
-
 import React, { createContext, useState,useEffect } from 'react';
 import { loginApi } from '../Services/DataServices';
-
 const AuthContext = createContext();
-
 const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [userData, setUserData] = useState({
@@ -29,9 +8,7 @@ const AuthProvider = ({ children }) => {
     user: '',
     role: ''
   });
-
   useEffect(() => {
-    // Retrieve authentication state from localStorage on component mount
     if ( localStorage.getItem('userData')) {
         return  setAuthenticated(true);
     }else{
@@ -70,9 +47,9 @@ const AuthProvider = ({ children }) => {
           role: ''
         });
       });
+
   };
   const handleLogout = () => {
-    // Perform logout logic
     setAuthenticated(false);
   };
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import '../App.css'
-import { useState,useEffect } from 'react';
+import { useState} from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreateRoundedIcon from '@mui/icons-material/CreateRounded';
@@ -10,7 +10,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import SpringModal from './Model';
-import { useNavigate } from 'react-router-dom';
 import { updateStockInApiUrlApi ,deleteStockApi} from '../Services/DataServices';
 
 const DataTable = ({deleteRow,dataSource,getTableData})=>{

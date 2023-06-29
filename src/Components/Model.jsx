@@ -76,13 +76,9 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
     })
   }, [])
 
-
-
-
   const handleCancel = () => setOpen(false);
   const handleAdd = () => {
     addAndUpdate(formData)
-
     handleCancel()
   };
   const handleInputChange = (event) => {
@@ -91,7 +87,6 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
       ...prevData,
       [name]: value,
     }));
-  
   };
 
   return (
@@ -110,7 +105,6 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
             </Typography>
             <Box sx={{ mt: 2 }}>
               <Grid container spacing={2}>
-             
                 <Grid item xs={6}>
                   <Autocomplete
                     options={suppliers}
@@ -144,10 +138,10 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                   />
                 </Grid>
                 <Grid item xs={6}>
-                <Autocomplete
-                    options={["Reels","Sheets"]}
+                  <Autocomplete
+                    options={["Reels", "Sheets"]}
                     getOptionLabel={(option) => option}
-                    value={formData.Paper_Form === null ? null : ["Reels","Sheets"].find((option) => option === formData.Paper_Form)}
+                    value={formData.Paper_Form === null ? null : ["Reels", "Sheets"].find((option) => option === formData.Paper_Form)}
                     onChange={(event, newValue) => {
                       setFormData((prevData) => ({
                         ...prevData,
@@ -165,43 +159,42 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                         })
                       }
                     }
-                  
-                  }
+                    }
                     renderInput={(params) => (
                       <TextField {...params} label="Paper Form" variant="outlined" />
                     )}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                <Autocomplete
-  options={[...paperSizeOfReel, ...paperSizeOfSheet]}
-  getOptionLabel={(option) => option.Paper_Reel_Size || option.Paper_Sheet_Size}
-  value={
-    formData.Paper_size === null
-      ? null
-      : [...paperSizeOfReel, ...paperSizeOfSheet].find(
-          (option) =>
-            option.Paper_Reel_Size === formData.Paper_size ||
-            option.Paper_Sheet_Size === formData.Paper_size
-        )
-  }
-  onChange={(event, newValue) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      Paper_size: newValue ? newValue.Paper_Reel_Size ||  newValue.Paper_Sheet_Size
-      : null,
-    }));
-  }}
-  renderInput={(params) => (
-    <TextField {...params} label="Paper Size" variant="outlined" />
-  )}
-/>
+                  <Autocomplete
+                    options={[...paperSizeOfReel, ...paperSizeOfSheet]}
+                    getOptionLabel={(option) => option.Paper_Reel_Size || option.Paper_Sheet_Size}
+                    value={
+                      formData.Paper_size === null
+                        ? null
+                        : [...paperSizeOfReel, ...paperSizeOfSheet].find(
+                          (option) =>
+                            option.Paper_Reel_Size === formData.Paper_size ||
+                            option.Paper_Sheet_Size === formData.Paper_size
+                        )
+                    }
+                    onChange={(event, newValue) => {
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        Paper_size: newValue ? newValue.Paper_Reel_Size || newValue.Paper_Sheet_Size
+                          : null,
+                      }));
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Paper Size" variant="outlined" />
+                    )}
+                  />
                 </Grid>
 
 
 
                 <Grid item xs={6}>
-                <Autocomplete
+                  <Autocomplete
                     options={brands}
                     getOptionLabel={(option) => option.Paper_Quantity}
                     value={formData.Brand === null ? null : brands.find((option) => option.Paper_Quantity === formData.Brand)}
@@ -217,25 +210,25 @@ export default function SpringModal({ setOpen, open, rowToPerform, title, addAnd
                   />
                 </Grid>
                 <Grid item xs={6}>
-                <Autocomplete
-  options={mills}
-  getOptionLabel={(option) => option.Paper_Mill}
-  value={
-    formData.Paper_Mill_Id === null
-      ? null
-      : mills.find((option) => option.Paper_Mill_Id === formData.Paper_Mill_Id)
-  }
-  onChange={(event, newValue) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      Paper_Mill_Id: newValue ? newValue.Paper_Mill_Id : null,
-    }));
-  }}
-  renderInput={(params) => <TextField {...params} label="Paper Mill" variant="outlined" />}
-/>
+                  <Autocomplete
+                    options={mills}
+                    getOptionLabel={(option) => option.Paper_Mill}
+                    value={
+                      formData.Paper_Mill_Id === null
+                        ? null
+                        : mills.find((option) => option.Paper_Mill_Id === formData.Paper_Mill_Id)
+                    }
+                    onChange={(event, newValue) => {
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        Paper_Mill_Id: newValue ? newValue.Paper_Mill_Id : null,
+                      }));
+                    }}
+                    renderInput={(params) => <TextField {...params} label="Paper Mill" variant="outlined" />}
+                  />
                 </Grid>
                 <Grid item xs={6}>
-                 <Autocomplete
+                  <Autocomplete
                     options={gsms}
                     getOptionLabel={(option) => option.GSM}
                     value={formData.Paper_gsm === null ? null : gsms.find((option) => option.GSM === formData.Paper_gsm)}
